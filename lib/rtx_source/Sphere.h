@@ -13,8 +13,8 @@ class Sphere
 {
 public:
     // Geometry info
-
-    // Ray info
+    glm::vec3 center;
+    float radius;
 
     // Intersect
     Intersection Intersect(Ray ray);

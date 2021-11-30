@@ -11,8 +11,8 @@ TODO: Ray
 class Ray
 {
 public:
-    glm::vec3 position;  // position of ray
-    glm::vec3 direction; // direction of ray (unit vector)
+    glm::vec3 pos; // position of ray
+    glm::vec3 dir; // direction of ray (unit vector)
 };
 
 #endif

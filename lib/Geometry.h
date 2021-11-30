@@ -27,21 +27,38 @@ arrays of unknown size.
 #ifndef __GEOMETRY_H__
 #define __GEOMETRY_H__
 
-class Geometry {
+// #include "rtx_source/Intersection.h"
+// #include "rtx_source/Util.h"
+#include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp>
+
+using namespace std;
+
+class Geometry
+{
 public:
-    GLenum mode = GL_TRIANGLES; // the cookboook for glDrawElements
-    int count; // number of elements to draw
-    GLenum type = GL_UNSIGNED_INT; // type of the index array
-    GLuint vao; // vertex array object a.k.a. geometry spreadsheet
-    std::vector<GLuint> buffers; // data storage
-    
-    virtual void init(){};
-    virtual void init(const char* s){};
-    
-    void draw(void){
-        glBindVertexArray(vao);
-        glDrawElements(mode,count,type,0);
-    }
+  // GLenum mode = GL_TRIANGLES;    // the cookboook for glDrawElements
+  // int count;                     // number of elements to draw
+  // GLenum type = GL_UNSIGNED_INT; // type of the index array
+  // GLuint vao;                    // vertex array object a.k.a. geometry spreadsheet
+  // std::vector<GLuint> buffers;   // data storage
+
+  virtual void init(){};
+  virtual void init(const char *s){};
+
+  // Init used by Triangle
+  virtual void init(vector<glm::vec3> tri){};
+  // Init used by Sphere
+  virtual void init(glm::vec3 center, float radius){};
+
+  // Intersect overwritten by Triangle and Sphere
+  // virtual Intersection Intersect(Ray ray){};
+
+  // void draw(void)
+  // {
+  //   glBindVertexArray(vao);
+  //   glDrawElements(mode, count, type, 0);
+  // }
 };
 
-#endif 
+#endif

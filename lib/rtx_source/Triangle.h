@@ -2,15 +2,14 @@
 TODO: Triangle
 *****************************************************/
 #define GLM_FORCE_RADIANS
-#include <glm/glm.hpp>
-#include <glm/gtx/transform.hpp>
+#include "../Geometry.h"
 
-#ifndef __CAMERA_H__
-#define __CAMERA_H__
+#ifndef __TRIANGLE_H__
+#define __TRIANGLE_H__
 
 #include "Intersection.h"
 
-class Intersection
+class Triangle : public Geometry
 {
 public:
     // Geometry info
