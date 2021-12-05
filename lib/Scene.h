@@ -43,6 +43,11 @@ public:
     std::map<std::string, Model *> model;
     std::map<std::string, Light *> light;
 
+    std::map<std::string, Model *> modelTransformed;
+    std::map<std::string, Geometry *> geoTransformed;
+
+    std::vector<Triangle *> worldTriangles;
+
     // The container of nodes will be the scene graph after we connect the nodes by setting the child_nodes.
     std::map<std::string, Node *> node;
 

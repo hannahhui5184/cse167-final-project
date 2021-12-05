@@ -9,14 +9,21 @@ TODO: Triangle
 
 #include "Intersection.h"
 
-class Triangle : public Geometry
+class Triangle
 {
 public:
     // Geometry info
-    glm::vec3 p1;
-    glm::vec3 p2;
-    glm::vec3 p3;
+    glm::mat3x3 points;
+    glm::mat3x3 norms;
 
+    Material *material;
+
+    // Init (each column is a length3 point)
+    void init(glm::mat3x3 tri, glm::mat3x3 norm)
+    {
+        points = tri;
+        norms = norm;
+    };
     // Intersect
     Intersection Intersect(Ray ray);
 };

@@ -8,7 +8,7 @@ TODO: Intersection
 
 // #include "Util.h"
 #include "Ray.h"
-#include "../Geometry.h"
+#include "../Material.h"
 
 class Intersection
 {
@@ -16,8 +16,8 @@ public:
     glm::vec3 position; // position of the intersection
 
     // Geometry info
-    glm::vec3 n;      // surface normal (unit vector)
-    Geometry *object; // pointer to material/object
+    glm::vec3 n;        // surface normal (unit vector)
+    Material *material; // pointer to material/object
 
     // Ray info
     glm::vec3 v;    // direction to the incoming ray (unit vector)

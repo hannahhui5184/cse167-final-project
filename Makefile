@@ -16,7 +16,7 @@ CFLAGS  = -g -Wall
 
 SRC_DIR = rtx_source/
 LIB_DIR = lib/rtx_source/
-INCLUDE_PATH = glm-0.9.7.1
+INCLUDE_PATH = glm-0.9.7.1 freeImage
 # typing 'make' will invoke the first target entry in the file 
 # (in this case the default target entry)
 # you can name this target entry anything, but "default" or "all"
@@ -39,7 +39,7 @@ Geo:  $(SRC_DIR)Sphere.cpp $(SRC_DIR)Triangle.cpp $(LIB_DIR)Intersection.h
 Image.o:  $(SRC_DIR)Image.cpp
 	$(CC) $(CFLAGS) -c -I$(INCLUDE_PATH) $(SRC_DIR)Image.cpp
 
-Main.o: $(SRC_DIR)Main.cpp
+Main.o: $(SRC_DIR)Main.cpp lib/Screenshot.h lib/FreeImage.h src/Scene.inl
 	$(CC) $(CFLAGS) -c -I$(INCLUDE_PATH) $(SRC_DIR)Main.cpp
 
 # To start over from scratch, type 'make clean'.  This

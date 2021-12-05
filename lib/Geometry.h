@@ -31,6 +31,7 @@ arrays of unknown size.
 // #include "rtx_source/Util.h"
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
+#include "rtx_source/Triangle.h"
 
 using namespace std;
 
@@ -43,16 +44,20 @@ public:
   // GLuint vao;                    // vertex array object a.k.a. geometry spreadsheet
   // std::vector<GLuint> buffers;   // data storage
 
+  vector<Triangle *> triangles;
+  vector<Triangle *> worldTriangles;
+
   virtual void init(){};
+  // Init used by .obj files
   virtual void init(const char *s){};
 
-  // Init used by Triangle
-  virtual void init(vector<glm::vec3> tri){};
-  // Init used by Sphere
-  virtual void init(glm::vec3 center, float radius){};
+  // // Init used by Triangle
+  // virtual void init(glm::mat3x3 tri, glm::mat3x3 norm){};
+  // // Init used by Sphere
+  // virtual void init(glm::vec3 center, float radius){};
 
   // Intersect overwritten by Triangle and Sphere
-  // virtual Intersection Intersect(Ray ray){};
+  virtual Intersection Intersect(Ray ray, Material *material);
 
   // void draw(void)
   // {

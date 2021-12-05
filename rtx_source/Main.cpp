@@ -1,14 +1,16 @@
-
 #include <stdlib.h>
 #include <iostream>
 #include <../lib/Camera.h>
 #include <../lib/rtx_source/Intersection.h>
 #include <../lib/rtx_source/Ray.h>
-#include <../lib/rtx_source/Image.h>
-#include <../lib/Scene.h>
+#include <../src/Scene.inl>
+#include <../lib/Screenshot.h>
 
 using namespace std;
+int width = 100;
+int height = 100;
 
+int REC_DEPTH = 3;
 /**
  * RayThruPixel - creates the Ray object that passes from the
  * camera position to the center of the (i,j) pixel
@@ -17,9 +19,15 @@ using namespace std;
  * @param int
  * @return Ray 
  */
-Ray RayThruPixel(Camera cam, int i, int j)
+Ray RayThruPixel(Camera *cam, int i, int j)
 {
-    return {};
+    glm::mat4 cameraMat = glm::inverse(cam->view);
+    glm::vec3 u = glm::vec3(cameraMat[0][0], cameraMat[0][1], cameraMat[0][2]);
+    glm::vec3 v = glm::vec3(cameraMat[1][0], cameraMat[1][1], cameraMat[1][2]);
+    glm::vec3 w = glm::vec3(cameraMat[2][0], cameraMat[2][1], cameraMat[2][2]);
+    float alpha = 2 * (i + 1 / 2) / width - 1;
+    float beta = 1 - 2 * (i + 1 / 2) / height;
+    return Ray(cam->eye, glm::normalize(alpha * u + beta * v - w));
 }
 
 /**
@@ -29,21 +37,43 @@ Ray RayThruPixel(Camera cam, int i, int j)
  * @param Scene
  * @return Intersection
  */
-Intersection Intersect(Ray ray, Scene scene)
+Intersection Intersect(Ray ray, Scene *scene)
 {
     float mindist = FLT_MAX;
     Intersection hit;
-    for (pair<string, Geometry *> geo_pair : scene.geometry)
+    for (Triangle *tri : scene->worldTriangles)
     { // Find closest intersection; test all objects
-        // Intersection hit_temp = IntersectObj(ray, geo_pair.second);
-        // // Ignore objects with no intersection (negative distance)
-        // if (hit_temp.distance >= 0 && hit_temp.distance < mindist)
-        // { // closer than previous hit
-        //     mindist = hit_temp.distance;
-        //     hit = hit_temp;
-        // }
+        Intersection hit_temp = tri->Intersect(ray);
+        // Ignore objects with no intersection (negative distance)
+        if (hit_temp.distance >= 0 && hit_temp.distance < mindist)
+        { // closer than previous hit
+            mindist = hit_temp.distance;
+            hit = hit_temp;
+        }
     }
     return hit;
+}
+
+/**
+ * @brief 
+ * 
+ * @param ray 
+ * @param scene 
+ * @return bool 
+ */
+bool hasIntersect(Ray ray, Scene *scene)
+{
+    for (Triangle *tri : scene->worldTriangles)
+    {
+        Intersection hit_temp = tri->Intersect(ray);
+        // Triangles that do have intersection with the ray
+        // will have a positive distance
+        if (hit_temp.distance >= 0)
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 /**
@@ -51,26 +81,58 @@ Intersection Intersect(Ray ray, Scene scene)
  * @param Intersection
  * @return vec3
  */
-glm::vec3 FindColor(Intersection hit)
+glm::vec3 FindColor(Intersection hit, Scene *scene, int depth)
 {
     // Lambert diffuse light (like HW3)
     // Run through all the light and take the dot product
     // between the normal and the light direction
 
     // Recursive mirror reflection
-    return glm::vec3(0.0f, 0.0f, 0.0f);
+
+    glm::vec3 color(0.0f, 0.0f, 0.0f);
+
+    // Get all light rays and lighting effects from each light
+    for (pair<string, Light *> light_pair : scene->light)
+    {
+        Light *light = light_pair.second;
+        glm::vec3 lightDir = glm::vec3(light->position) - hit.position;
+
+        Ray lightRay(hit.position, lightDir);
+
+        // If there is an intersection between the light and the intersect point,
+        // do not add this color component
+        if (!hasIntersect(lightRay, scene))
+        {
+            Intersection lightHit = Intersect(lightRay, scene);
+            // ambient and Lambert diffuse components (4-3 Lighting slide 25)
+            glm::vec4 light4 = (lightHit.material->ambient + lightHit.material->diffuse * std::max(glm::dot(lightHit.n, lightDir), 0.0f)) * light->color;
+
+            color += glm::vec3(light4);
+        }
+    }
+
+    if (depth > 0)
+    {
+        // Generate the mirror reflected ray and recurse
+        glm::vec3 mirrorDir = 2 * (glm::dot(hit.n, hit.v)) * (hit.n - hit.v); // (7-1 RayTracing slide 55)
+        Ray mirrorRay(hit.position, mirrorDir);
+        Intersection mirrorHit = Intersect(mirrorRay, scene);
+        color += FindColor(mirrorHit, scene, depth - 1);
+    }
+
+    return color;
 }
 
 /**
  * Raytrace - runs the raytracing algorithm and returns the
  * generated image.
- * @param Camera
+ * @param Camera*
  * @param Scene
  * @param int
  * @param height
  * @return
  */
-Image *Raytrace(Camera cam, Scene scene, int width, int height)
+Image *Raytrace(Camera *cam, Scene *scene, int width, int height)
 {
     Image *image = new Image(width, height);
     for (int j = 0; j < height; j++)
@@ -79,7 +141,7 @@ Image *Raytrace(Camera cam, Scene scene, int width, int height)
         {
             Ray ray = RayThruPixel(cam, i, j);
             Intersection hit = Intersect(ray, scene);
-            image->pixelArr[i][j] = FindColor(hit);
+            image->pixelArr[i][j] = FindColor(hit, scene, REC_DEPTH);
         }
     }
     return image;
@@ -92,15 +154,9 @@ int main(int argc, char *argv[])
 {
     std::cout << "Program is running" << endl;
 
-    // Initialize Camera with the defaults from HW3
-    Camera cam;
-    cam.eye = glm::vec3(5.0f, 0.0f, 0.0f);
-    cam.target = glm::vec3(0.0f, 0.0f, 0.0f);
-    cam.up = glm::vec3(0.0f, 1.0f, 0.0f);
-    cam.fovy = 30.0f;
-    cam.aspect = 4.0f / 3.0f;
-    cam.near = 0.01f;
-    cam.far = 100.0f;
+    // Initialize Scene
+    Scene scene;
+    scene.init();
 
     // Create Scene
     // Scene scene = ?
@@ -110,7 +166,9 @@ int main(int argc, char *argv[])
     int height = 100;
 
     // Perform ray tracing
-    // Image img = Raytrace(cam, scene, width, height);
+    Image *img = Raytrace(scene.camera, &scene, width, height);
 
     // Save screenshot of image
+    Screenshot screenshot;
+    screenshot.save("test.png", img);
 }
