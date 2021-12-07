@@ -1,159 +1,174 @@
 #include <stdlib.h>
 #include <iostream>
-// OSX systems need their own headers
-#ifdef __APPLE__
-#include <OpenGL/gl3.h>
-#include <OpenGL/glext.h>
-#include <GLUT/glut.h>
-#else
-#include <GL/glew.h>
-#include <GL/glut.h>
-#endif
-// Use of degrees is deprecated. Use radians for GLM functions
-#define GLM_FORCE_RADIANS
-#include <glm/glm.hpp>
-#include "Screenshot.h"
-#include "Scene.h"
+#include <../lib/Camera.h>
+#include "../lib/Intersection.h"
+#include <../lib/Ray.h>
+#include <../lib/Scene.h>
+#include <../lib/Screenshot.h>
 
+using namespace std;
+int width = 100;
+int height = 100;
 
-static const int width = 800;
-static const int height = 600;
-static const char* title = "Scene viewer";
-static const glm::vec4 background(0.1f, 0.2f, 0.3f, 1.0f);
-static Scene scene;
-
-#include "hw3AutoScreenshots.h"
-
-void printHelp(){
-    std::cout << R"(
-    Available commands:
-      press 'H' to print this message again.
-      press Esc to quit.
-      press 'O' to save a screenshot.
-      press the arrow keys to rotate camera.
-      press 'A'/'Z' to zoom.
-      press 'R' to reset camera.
-      press 'L' to turn on/off the lighting.
-    
-      press Spacebar to generate images for hw3 submission.
-    
-)";
+int REC_DEPTH = 3;
+/**
+ * RayThruPixel - creates the Ray object that passes from the
+ * camera position to the center of the (i,j) pixel
+ * @param Camera 
+ * @param int
+ * @param int
+ * @return Ray 
+ */
+Ray RayThruPixel(Camera *cam, int i, int j)
+{
+    glm::mat4 cameraMat = glm::inverse(cam->view);
+    glm::vec3 u = glm::vec3(cameraMat[0][0], cameraMat[0][1], cameraMat[0][2]);
+    glm::vec3 v = glm::vec3(cameraMat[1][0], cameraMat[1][1], cameraMat[1][2]);
+    glm::vec3 w = glm::vec3(cameraMat[2][0], cameraMat[2][1], cameraMat[2][2]);
+    float alpha = 2 * (i + 1 / 2) / width - 1;
+    float beta = 1 - 2 * (i + 1 / 2) / height;
+    return Ray(cam->eye, glm::normalize(alpha * u + beta * v - w));
 }
 
-void initialize(void){
-    printHelp();
-    glClearColor(background[0], background[1], background[2], background[3]); // background color
-    glViewport(0,0,width,height);
-    
-    // Initialize scene
+/**
+ * Intersect - finds the intersection between ray and each of
+ * the objects in the scene.
+ * @param Ray
+ * @param Scene
+ * @return Intersection
+ */
+Intersection Intersect(Ray ray, Scene *scene)
+{
+    float mindist = FLT_MAX;
+    Intersection hit;
+    for (Triangle *tri : scene->worldTriangles)
+    { // Find closest intersection; test all objects
+        Intersection hit_temp = tri->Intersect(ray);
+        // Ignore objects with no intersection (negative distance)
+        if (hit_temp.distance >= 0 && hit_temp.distance < mindist)
+        { // closer than previous hit
+            mindist = hit_temp.distance;
+            hit = hit_temp;
+        }
+    }
+    return hit;
+}
+
+/**
+ * @brief 
+ * 
+ * @param ray 
+ * @param scene 
+ * @return bool 
+ */
+bool hasIntersect(Ray ray, Scene *scene)
+{
+    for (Triangle *tri : scene->worldTriangles)
+    {
+        Intersection hit_temp = tri->Intersect(ray);
+        // Triangles that do have intersection with the ray
+        // will have a positive distance
+        if (hit_temp.distance >= 0)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * FindColor
+ * @param Intersection
+ * @return vec3
+ */
+glm::vec3 FindColor(Intersection hit, Scene *scene, int depth)
+{
+    // Lambert diffuse light (like HW3)
+    // Run through all the light and take the dot product
+    // between the normal and the light direction
+
+    // Recursive mirror reflection
+
+    glm::vec3 color(0.0f, 0.0f, 0.0f);
+
+    // Get all light rays and lighting effects from each light
+    for (pair<string, Light *> light_pair : scene->light)
+    {
+        Light *light = light_pair.second;
+        glm::vec3 lightDir = glm::vec3(light->position) - hit.position;
+
+        Ray lightRay(hit.position, lightDir);
+
+        // If there is an intersection between the light and the intersect point,
+        // do not add this color component
+        if (!hasIntersect(lightRay, scene))
+        {
+            Intersection lightHit = Intersect(lightRay, scene);
+            // ambient and Lambert diffuse components (4-3 Lighting slide 25)
+            glm::vec4 light4 = (lightHit.material->ambient + lightHit.material->diffuse * std::max(glm::dot(lightHit.n, lightDir), 0.0f)) * light->color;
+
+            color += glm::vec3(light4);
+        }
+    }
+
+    if (depth > 0)
+    {
+        // Generate the mirror reflected ray and recurse
+        glm::vec3 mirrorDir = 2 * (glm::dot(hit.n, hit.v)) * (hit.n - hit.v); // (7-1 RayTracing slide 55)
+        Ray mirrorRay(hit.position, mirrorDir);
+        Intersection mirrorHit = Intersect(mirrorRay, scene);
+        color += FindColor(mirrorHit, scene, depth - 1);
+    }
+
+    return color;
+}
+
+/**
+ * Raytrace - runs the raytracing algorithm and returns the
+ * generated image.
+ * @param Camera*
+ * @param Scene
+ * @param int
+ * @param height
+ * @return
+ */
+Image *Raytrace(Camera *cam, Scene *scene, int width, int height)
+{
+    Image *image = new Image(width, height);
+    for (int j = 0; j < height; j++)
+    {
+        for (int i = 0; i < width; i++)
+        {
+            Ray ray = RayThruPixel(cam, i, j);
+            Intersection hit = Intersect(ray, scene);
+            image->pixelArr[i][j] = FindColor(hit, scene, REC_DEPTH);
+        }
+    }
+    return image;
+}
+
+/**
+ * Builds the scene and returns an image as a screenshot
+ */
+int main(int argc, char *argv[])
+{
+    std::cout << "Program is running" << endl;
+
+    // Initialize Scene
+    Scene scene;
     scene.init();
 
-    // Enable depth test
-    glEnable(GL_DEPTH_TEST);
-}
+    // Create Scene
+    // Scene scene = ?
 
-void display(void){
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-    
-    scene.draw();
-    
-    glutSwapBuffers();
-    glFlush();
-    
-}
+    // Set width and height of image (currently arbitrary num)
+    int width = 100;
+    int height = 100;
 
-void saveScreenShot(const char* filename = "test.png"){
-    int currentwidth = glutGet(GLUT_WINDOW_WIDTH);
-    int currentheight = glutGet(GLUT_WINDOW_HEIGHT);
-    Screenshot imag = Screenshot(currentwidth,currentheight);
-    imag.save(filename);
-}
+    // Perform ray tracing
+    Image *img = Raytrace(scene.camera, &scene, width, height);
 
-void keyboard(unsigned char key, int x, int y){
-    switch(key){
-        case 27: // Escape to quit
-            exit(0);
-            break;
-        case 'h': // print help
-            printHelp();
-            break;
-        case 'o': // save screenshot
-            saveScreenShot();
-            break;
-        case 'r':
-            scene.camera -> aspect_default = float(glutGet(GLUT_WINDOW_WIDTH))/float(glutGet(GLUT_WINDOW_HEIGHT));
-            scene.camera -> reset();
-            glutPostRedisplay();
-            break;
-        case 'a':
-            scene.camera -> zoom(0.9f);
-            glutPostRedisplay();
-            break;
-        case 'z':
-            scene.camera -> zoom(1.1f);
-            glutPostRedisplay();
-            break;
-        case 'l':
-            scene.shader -> enablelighting = !(scene.shader -> enablelighting);
-            glutPostRedisplay();
-            break;
-        case ' ':
-            hw3AutoScreenshots();
-            glutPostRedisplay();
-            break;
-        default:
-            glutPostRedisplay();
-            break;
-    }
-}
-void specialKey(int key, int x, int y){
-    switch (key) {
-        case GLUT_KEY_UP: // up
-            scene.camera -> rotateUp(-10.0f);
-            glutPostRedisplay();
-            break;
-        case GLUT_KEY_DOWN: // down
-            scene.camera -> rotateUp(10.0f);
-            glutPostRedisplay();
-            break;
-        case GLUT_KEY_RIGHT: // right
-            scene.camera -> rotateRight(-10.0f);
-            glutPostRedisplay();
-            break;
-        case GLUT_KEY_LEFT: // left
-            scene.camera -> rotateRight(10.0f);
-            glutPostRedisplay();
-            break;
-    }
-}
-
-int main(int argc, char** argv)
-{
-    // BEGIN CREATE WINDOW
-    glutInit(&argc, argv);
-    
-#ifdef __APPLE__
-    glutInitDisplayMode( GLUT_3_2_CORE_PROFILE | GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-#else
-    glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH );
-#endif
-    glutInitWindowSize(width, height);
-    glutCreateWindow(title);
-#ifndef __APPLE__
-    glewExperimental = GL_TRUE;
-    GLenum err = glewInit() ;
-    if (GLEW_OK != err) {
-        std::cerr << "Error: " << glewGetErrorString(err) << std::endl;
-    }
-#endif
-    std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
-    // END CREATE WINDOW
-    
-    initialize();
-    glutDisplayFunc(display);
-    glutKeyboardFunc(keyboard);
-    glutSpecialFunc(specialKey);
-    
-    glutMainLoop();
-	return 0;   /* ANSI C requires main to return int. */
+    // Save screenshot of image
+    Screenshot screenshot;
+    screenshot.save("test.png", img);
 }

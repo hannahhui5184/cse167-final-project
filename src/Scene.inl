@@ -3,7 +3,7 @@ Scene.inl contains the definition of the scene graph
 *****************************************************/
 #include "../lib/Scene.h"
 #include "../lib/Cube.h"
-#include "../lib/Obj.h"
+#include "../lib/Geometry.h"
 #define _USE_MATH_DEFINES
 #include <math.h>
 
@@ -11,9 +11,9 @@ using namespace glm;
 void Scene::init(void)
 {
     // Create a geometry palette
-    geometry["cube"] = new Obj;
-    geometry["teapot"] = new Obj;
-    geometry["bunny"] = new Obj;
+    geometry["cube"] = new Geometry;
+    geometry["teapot"] = new Geometry;
+    geometry["bunny"] = new Geometry;
     geometry["cube"]->init("models/teapot.obj");
     geometry["teapot"]->init("models/teapot.obj");
     geometry["bunny"]->init("models/bunny.obj");

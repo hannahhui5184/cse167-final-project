@@ -11,7 +11,7 @@
 #include "FreeImage.h"
 #include <vector>
 #include <iostream>
-#include "rtx_source/Image.h"
+#include "Image.h"
 
 class Screenshot
 {

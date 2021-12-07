@@ -31,7 +31,7 @@ arrays of unknown size.
 // #include "rtx_source/Util.h"
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
-#include "rtx_source/Triangle.h"
+#include "Triangle.h"
 
 using namespace std;
 
@@ -47,9 +47,9 @@ public:
   vector<Triangle *> triangles;
   vector<Triangle *> worldTriangles;
 
-  virtual void init(){};
+  void init(){};
   // Init used by .obj files
-  virtual void init(const char *s){};
+  void init(const char *s);
 
   // // Init used by Triangle
   // virtual void init(glm::mat3x3 tri, glm::mat3x3 norm){};
@@ -57,13 +57,21 @@ public:
   // virtual void init(glm::vec3 center, float radius){};
 
   // Intersect overwritten by Triangle and Sphere
-  virtual Intersection Intersect(Ray ray, Material *material);
+  Intersection Intersect(Ray ray, Material *material);
 
   // void draw(void)
   // {
   //   glBindVertexArray(vao);
   //   glDrawElements(mode, count, type, 0);
   // }
+  Geometry()
+  {
+    triangles = {};
+    worldTriangles = {};
+  }
+  ~Geometry()
+  {
+  }
 };
 
 #endif

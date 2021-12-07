@@ -9,10 +9,10 @@ that loads an obj file.
 *****************************************************/
 #include <stdio.h>
 #include <iostream>
-#include <string>
+#include <string.h>
 #include <vector>
 
-#include "Obj.h"
+#include "../lib/Obj.h"
 
 void Obj::init(const char *filename)
 {
@@ -133,7 +133,7 @@ Intersection Obj::Intersect(Ray ray, Material *material)
     Intersection hit;
     for (Triangle *tri : Obj::worldTriangles)
     {
-        Intersection hit_temp = tri->Intersect(ray, material);
+        Intersection hit_temp = tri->Intersect(ray);
         // Ignore objects with no intersection (negative distance)
         if (hit_temp.distance >= 0 && hit_temp.distance < mindist)
         { // closer than previous hit
@@ -141,4 +141,5 @@ Intersection Obj::Intersect(Ray ray, Material *material)
             hit = hit_temp;
         }
     }
+    return hit;
 }

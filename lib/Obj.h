@@ -5,7 +5,7 @@ that loads an obj file.
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include "Geometry.h"
-#include "rtx_source/Triangle.h"
+#include "Triangle.h"
 #ifndef __OBJ_H__
 #define __OBJ_H__
 
@@ -15,6 +15,12 @@ public:
     void init(const char *filename);
 
     Intersection Intersect(Ray ray, Material *material);
+    // Obj()
+    // {
+    // }
+    ~Obj()
+    {
+    }
 };
 
 #endif
