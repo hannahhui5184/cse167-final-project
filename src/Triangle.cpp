@@ -31,7 +31,7 @@ Intersection Triangle::Intersect(Ray ray)
     glm::vec4 bary = glm::inverse(mat) * p0;
 
     // No intersection with this ray
-    if (bary[0] < 0 || bary[1] < 0 || bary[2] < 0 || bary[3] < 0)
+    if (bary.x < 0 || bary.y < 0 || bary.z < 0 || bary.w < 0)
     {
         intersect.distance = -1.0f;
         return intersect;

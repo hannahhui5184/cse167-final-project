@@ -14,6 +14,7 @@ that loads an obj file.
 #include <string.h>
 
 #include "../lib/Geometry.h"
+#include <glm/gtx/string_cast.hpp>
 
 void Geometry::init(const char *filename)
 {
@@ -62,6 +63,7 @@ void Geometry::init(const char *filename)
             temp_normalIndices.push_back(normalIndex[0]);
             temp_normalIndices.push_back(normalIndex[1]);
             temp_normalIndices.push_back(normalIndex[2]);
+            std::cout << vertexIndex[0] << " " << vertexIndex[1] << " " << vertexIndex[2] << endl;
         }
     }
     std::cout << "done." << std::endl;
@@ -84,16 +86,17 @@ void Geometry::init(const char *filename)
     std::cout << "Setting up buffers...";
     for (unsigned int k = 0; k < n / 3; k++)
     {
-        Triangle tri;
-        tri.points[0] = vertices[k * 3];
-        tri.points[1] = vertices[k * 3 + 1];
-        tri.points[2] = vertices[k * 3 + 2];
+        Triangle* tri = new Triangle;
+        tri->points[0] = vertices[k * 3];
+        tri->points[1] = vertices[k * 3 + 1];
+        tri->points[2] = vertices[k * 3 + 2];
+        std::cout << glm::to_string(tri->points) << endl;
 
-        tri.norms[0] = normals[k * 3];
-        tri.norms[1] = normals[k * 3 + 1];
-        tri.norms[2] = normals[k * 3 + 2];
+        tri->norms[0] = normals[k * 3];
+        tri->norms[1] = normals[k * 3 + 1];
+        tri->norms[2] = normals[k * 3 + 2];
 
-        triangles.push_back(&tri);
+        triangles.push_back(tri);
     }
     // glGenVertexArrays(1, &vao);
     // buffers.resize(3);

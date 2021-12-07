@@ -18,6 +18,7 @@ void Scene::init(void)
     geometry["teapot"]->init("models/teapot.obj");
     geometry["bunny"]->init("models/bunny.obj");
 
+
     // Create a material palette
     material["wood"] = new Material;
     material["wood"]->ambient = vec4(0.1f, 0.1f, 0.1f, 1.0f);
@@ -62,6 +63,8 @@ void Scene::init(void)
     material["obsidian"]->specular = vec4(0.332741f, 0.328634f, 0.346435f, 1.0f);
     material["obsidian"]->shininess = 0.3;
 
+     std::cout << "1" << endl;
+
     // Create a model palette
     model["teapot1"] = new Model;
     model["teapot1"]->geometry = geometry["teapot"];
@@ -84,6 +87,7 @@ void Scene::init(void)
     model["bunny2"] = new Model;
     model["bunny2"]->geometry = geometry["bunny"];
     model["bunny2"]->material = material["silver"];
+    std::cout << "2" << endl;
 
     // Create a light palette
     light["sun"] = new Light;
@@ -95,6 +99,7 @@ void Scene::init(void)
     light["bulb"]->color = 1.5f * vec4(1.0f, 0.2f, 0.1f, 1.0f);
 
     // Build the scene graph
+    node["world"] = new Node;
     node["bunny1"] = new Node;
     node["bunny2"] = new Node;
     node["table"] = new Node;
@@ -105,6 +110,8 @@ void Scene::init(void)
     node["teapot1"] = new Node;
     node["teapot2"] = new Node;
     node["bunny"] = new Node;
+
+    std::cout << "3" << endl;
 
     node["table"]->childnodes.push_back(node["table top"]);
     node["table"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)));
@@ -139,6 +146,7 @@ void Scene::init(void)
     node["table top"]->childnodes.push_back(node["teapot2"]);
     node["table top"]->childtransforms.push_back(translate(vec3(0.5f, 0.0f, 0.0f)) * rotate(-120.0f * float(M_PI) / 180.0f, vec3(0.0f, 1.0f, 0.0f)));
 
+    std::cout << "4" << endl;
     /*
     node["teapot1"] -> models.push_back( model["teapot1"] );
     node["teapot1"] -> modeltransforms.push_back( scale(vec3(0.5f)) );
@@ -149,19 +157,33 @@ void Scene::init(void)
     node["bunny"]->models.push_back(model["bunny"]);
     node["bunny"]->modeltransforms.push_back(scale(vec3(0.8f)) * translate(vec3(0.0f, 1.0f, 0.0f)));
 
+    std::cout << "5" << endl;
+
     node["bunny1"]->models.push_back(model["bunny1"]);
     node["bunny1"]->modeltransforms.push_back(scale(vec3(0.2f)) * translate(vec3(0.0f, 0.7f, 0.0f)));
+
+    std::cout << "6" << endl;
+
     node["bunny2"]->models.push_back(model["bunny2"]);
     node["bunny2"]->modeltransforms.push_back(scale(vec3(0.3f)) * translate(vec3(0.0f, 0.7f, 0.0f)));
 
+    std::cout << "7" << endl;
+
+    std::cout << node["world"] << endl;
+
     node["world"]->childnodes.push_back(node["table"]);
     node["world"]->childtransforms.push_back(mat4(1.0f));
+
+    std::cout << "8" << endl;
     /*
     node["world"] -> childnodes.push_back( node["bunny"] );
     node["world"] -> childtransforms.push_back( translate(vec3(-1.8f,0.0f,0.0f)) * rotate( 90.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f) ));
     */
     node["world"]->childnodes.push_back(node["bunny1"]);
     node["world"]->childtransforms.push_back(translate(vec3(0.3f, 0.0f, 0.0f)) * rotate(40.0f * float(M_PI) / 180.0f, vec3(0.0f, 1.0f, 0.0f)));
+    
+    std::cout << "9" << endl;
+    
     node["world"]->childnodes.push_back(node["bunny2"]);
     node["world"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)) * rotate(70.0f * float(M_PI) / 180.0f, vec3(0.0f, 1.0f, 0.0f)));
     /*
@@ -169,6 +191,7 @@ void Scene::init(void)
     node["world"] -> modeltransforms.push_back( translate(vec3(0.0f,2.0f,0.0f))*scale(vec3(0.1f)) );
     */
 
+    std::cout << "10" << endl;
     // Put a camera
     camera = new Camera;
     camera->target_default = vec3(0.0f, 1.0f, 0.0f);

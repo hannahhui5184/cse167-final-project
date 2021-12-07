@@ -7,6 +7,7 @@ Scene.cpp contains the implementation of the draw command
 #include "../lib/Cube.h"
 #include "../lib/Obj.h"
 #include "../lib/Geometry.h"
+#include <glm/gtx/string_cast.hpp>
 
 // The scene init definition
 #include "Scene.inl"
@@ -79,6 +80,7 @@ void Scene::draw(void)
 
             for (Triangle *tri : triangles)
             {
+                // std::cout << "Triangles: " << glm::to_string(tri->points) << endl;
                 glm::mat3x3 points = tri->points;
                 glm::mat3x3 norms = tri->norms;
 
@@ -88,13 +90,13 @@ void Scene::draw(void)
 
                 glm::mat3x3 n_vm = glm::inverse(glm::transpose(glm::mat3(cur_VM * (cur->modeltransforms[i]))));
 
-                Triangle worldTri;
+                Triangle* worldTri = new Triangle;
                 //TODO: check this, the math might be wrong
-                worldTri.points = glm::mat3(cur_VM * (cur->modeltransforms[i]) * p_mat);
-                worldTri.norms = n_vm * norms;
-                worldTri.material = (cur->models[i])->material;
+                worldTri->points = glm::mat3(cur_VM * (cur->modeltransforms[i]) * p_mat);
+                worldTri->norms = n_vm * norms;
+                worldTri->material = (cur->models[i])->material;
 
-                this->worldTriangles.push_back(&worldTri);
+                this->worldTriangles.push_back(worldTri);
             }
 
             //TODO: Minghui's implementation
