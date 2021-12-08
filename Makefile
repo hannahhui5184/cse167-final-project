@@ -80,7 +80,8 @@
 CC = g++
 CFLAGS = -g -std=c++11 -Wno-deprecated-register -Wno-deprecated-declarations -DGL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED
 INCFLAGS = -I./glm-0.9.7.1 -I./lib/
-LDFLAGS = -L./freeImage/mac/ -lm  -lfreeimage 
+LDFLAGS = 
+# LDFLAGS = -L./freeImage/mac/ -lm  -lfreeimage 
 
 RM = /bin/rm -f
 all: SceneViewer

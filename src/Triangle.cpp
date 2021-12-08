@@ -13,13 +13,13 @@ Intersection Triangle::Intersect(Ray ray)
 {
     Intersection intersect;
 
-    glm::vec3 p1 = Triangle::points[0];
-    glm::vec3 p2 = Triangle::points[1];
-    glm::vec3 p3 = Triangle::points[2];
+    glm::vec3 p1 = this->points[0];
+    glm::vec3 p3 = this->points[2];
+    glm::vec3 p2 = this->points[1];
 
-    glm::vec3 n1 = Triangle::norms[0];
-    glm::vec3 n2 = Triangle::norms[1];
-    glm::vec3 n3 = Triangle::norms[2];
+    glm::vec3 n1 = this->norms[0];
+    glm::vec3 n2 = this->norms[1];
+    glm::vec3 n3 = this->norms[2];
 
     // Solve for Barycentric coord
     glm::mat4x4 mat(glm::vec4(p1, 1.0f),

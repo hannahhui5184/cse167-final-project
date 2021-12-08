@@ -50,7 +50,7 @@ Intersection Intersect(Ray ray, Scene *scene)
 {
     float mindist = FLT_MAX;
     Intersection hit;
-    // std::cout << scene->worldTriangles.size() << endl;
+    // std::cout << "WorldTri size: " << scene->worldTriangles.size() << endl;
     for (Triangle *tri : scene->worldTriangles)
     { // Find closest intersection; test all objects
         // std::cout << "World Tri: " << glm::to_string(tri->points) << endl;
@@ -61,6 +61,13 @@ Intersection Intersect(Ray ray, Scene *scene)
             mindist = hit_temp.distance;
             hit = hit_temp;
         }
+    }
+
+    // If no intersections are found, the normal vector will never be updated
+    // On updates, the normal vector is normalized (magnitude 1)
+    if (0 == glm::length(hit.n))
+    {
+        hit.distance = -1;
     }
     return hit;
 }
@@ -103,29 +110,34 @@ glm::vec3 FindColor(Intersection hit, Scene *scene, int depth)
     glm::vec3 color(0.0f, 0.0f, 0.0f);
 
     cout << "depth: " << depth << endl;
+    if (hit.distance < 0)
+    {
+        return color;
+    }
+
     // Get all light rays and lighting effects from each light
     if (depth > 0)
     {
-    for (pair<string, Light *> light_pair : scene->light)
-    {
-        cout << "test" << endl;
-        Light *light = light_pair.second;
-        glm::vec3 lightDir = glm::vec3(light->position) - hit.position;
-
-        Ray lightRay(hit.position, lightDir);
-
-        // If there is an intersection between the light and the intersect point,
-        // do not add this color component
-        if (!hasIntersect(lightRay, scene))
+        for (pair<string, Light *> light_pair : scene->light)
         {
-            cout << "test2" << endl;
-            Intersection lightHit = Intersect(lightRay, scene);
-            // ambient and Lambert diffuse components (4-3 Lighting slide 25)
-            glm::vec4 light4 = (lightHit.material->ambient + lightHit.material->diffuse * std::max(glm::dot(lightHit.n, lightDir), 0.0f)) * light->color;
+            cout << "test" << endl;
+            Light *light = light_pair.second;
+            glm::vec3 lightDir = glm::vec3(light->position) - hit.position;
 
-            color += glm::vec3(light4);
+            Ray lightRay(hit.position, lightDir);
+
+            // If there is an intersection between the light and the intersect point,
+            // do not add this color component
+            Intersection interfere = Intersect(lightRay, scene);
+            if (interfere.distance < 0)
+            {
+                cout << "test2" << endl;
+                // ambient and Lambert diffuse components (4-3 Lighting slide 25)
+                glm::vec4 light4 = (hit.material->ambient + hit.material->diffuse * std::max(glm::dot(hit.n, lightDir), 0.0f)) * light->color;
+
+                color += glm::vec3(light4);
+            }
         }
-    }
 
         // Generate the mirror reflected ray and recurse
         glm::vec3 mirrorDir = 2 * (glm::dot(hit.n, hit.v)) * (hit.n - hit.v); // (7-1 RayTracing slide 55)
@@ -154,14 +166,25 @@ Image *Raytrace(Camera *cam, Scene *scene, int width, int height)
         for (int i = 0; i < width; i++)
         {
             Ray ray = RayThruPixel(cam, i, j);
-            std::cout <<  "position: " << ray.pos.x << "," << ray.pos.y << "," << ray.pos.z << endl;
-            std::cout << "direction: " << ray.dir.x << "," << ray.dir.y << "," << ray.dir.z << endl;
+            // Ray ray(glm::vec3(0.0f, 1.0f, 5.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+            std::cout << "(i,j): " << i << " " << j << endl;
+            // std::cout << "position: " << ray.pos.x << "," << ray.pos.y << "," << ray.pos.z << endl;
+            // std::cout << "direction: " << ray.dir.x << "," << ray.dir.y << "," << ray.dir.z << endl;
             Intersection hit = Intersect(ray, scene);
-            std::cout <<  "position intersection: " << hit.position.x << "," << hit.position.y << "," << hit.position.z << endl;
-            std::cout << "distance: " << hit.distance << endl;
-            std::cout << "normal: " << glm::to_string(hit.n) << endl;
+            // std::cout << "position intersection: " << hit.position.x << "," << hit.position.y << "," << hit.position.z << endl;
+            // std::cout << "distance: " << hit.distance << endl;
+            // std::cout << "normal: " << glm::to_string(hit.n) << endl
+            //           << endl;
             image->pixelArr[i][j] = FindColor(hit, scene, REC_DEPTH);
-            std::cout << image->pixelArr[i][j].x << "," << image->pixelArr[i][j].y << "," << image->pixelArr[i][j].z << endl;
+            // if (hit.distance < 0)
+            // {
+            //     image->pixelArr[i][j] = glm::vec3(0.0f, 0.0f, 0.0f);
+            // }
+            // else
+            // {
+            //     image->pixelArr[i][j] = normalize(hit.n) * 0.5f + 0.5f;
+            // }
+            // std::cout << image->pixelArr[i][j].x << "," << image->pixelArr[i][j].y << "," << image->pixelArr[i][j].z << endl;
         }
         std::cout << endl;
     }
@@ -180,9 +203,6 @@ int main(int argc, char *argv[])
     scene.init();
     // scene.camera->eye = glm::vec3(2.0f,2.0f,2.0f);
     scene.draw();
-    
-    
-
 
     // Create Scene
     // Scene scene = ?
@@ -195,6 +215,22 @@ int main(int argc, char *argv[])
     Image *img = Raytrace(scene.camera, &scene, width, height);
 
     // Save screenshot of image
-    Screenshot screenshot;
-    screenshot.save("test.png", img);
+    std::cerr << "P3\n"
+              << width << ' ' << height << "\n255\n";
+
+    for (int j = 0; j < height; ++j)
+    {
+        for (int i = 0; i < width; ++i)
+        {
+            auto r = img->pixelArr[i][j].x;
+            auto g = img->pixelArr[i][j].y;
+            auto b = img->pixelArr[i][j].z;
+
+            int ir = static_cast<int>(255.999 * r);
+            int ig = static_cast<int>(255.999 * g);
+            int ib = static_cast<int>(255.999 * b);
+
+            std::cerr << ir << ' ' << ig << ' ' << ib << '\n';
+        }
+    }
 }

@@ -80,7 +80,7 @@ void Scene::draw(void)
 
             for (Triangle *tri : triangles)
             {
-                // std::cout << "Triangles: " << glm::to_string(tri->points) << endl;
+                std::cout << "Triangles: " << glm::to_string(tri->points) << endl;
                 glm::mat3x3 points = tri->points;
                 glm::mat3x3 norms = tri->norms;
 
@@ -90,7 +90,7 @@ void Scene::draw(void)
 
                 glm::mat3x3 n_vm = glm::inverse(glm::transpose(glm::mat3(cur_VM * (cur->modeltransforms[i]))));
 
-                Triangle* worldTri = new Triangle;
+                Triangle *worldTri = new Triangle;
                 //TODO: check this, the math might be wrong
                 worldTri->points = glm::mat3(cur_VM * (cur->modeltransforms[i]) * p_mat);
                 worldTri->norms = n_vm * norms;

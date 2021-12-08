@@ -14,10 +14,18 @@ void Scene::init(void)
     geometry["cube"] = new Geometry;
     geometry["teapot"] = new Geometry;
     geometry["bunny"] = new Geometry;
+    geometry["triangle"] = new Geometry;
     geometry["cube"]->init("models/teapot.obj");
     geometry["teapot"]->init("models/teapot.obj");
     geometry["bunny"]->init("models/bunny.obj");
+    mat3 points = mat3x3(vec3(0.0f, 0.0f, 0.0f),
+                         vec3(1.0f, 0.0f, 0.0f),
+                         vec3(0.0f, 2.0f, 0.0f));
 
+    mat3 norms = mat3x3(vec3(0.0f, 0.0f, 1.0f),
+                        vec3(0.0f, 0.0f, 1.0f),
+                        vec3(0.0f, 0.0f, 1.0f));
+    geometry["triangle"]->init(points, norms);
 
     // Create a material palette
     material["wood"] = new Material;
@@ -63,7 +71,7 @@ void Scene::init(void)
     material["obsidian"]->specular = vec4(0.332741f, 0.328634f, 0.346435f, 1.0f);
     material["obsidian"]->shininess = 0.3;
 
-     std::cout << "1" << endl;
+    std::cout << "1" << endl;
 
     // Create a model palette
     model["teapot1"] = new Model;
@@ -87,6 +95,9 @@ void Scene::init(void)
     model["bunny2"] = new Model;
     model["bunny2"]->geometry = geometry["bunny"];
     model["bunny2"]->material = material["silver"];
+    model["triangle"] = new Model;
+    model["triangle"]->geometry = geometry["triangle"];
+    model["triangle"]->material = material["silver"];
     std::cout << "2" << endl;
 
     // Create a light palette
@@ -110,6 +121,7 @@ void Scene::init(void)
     node["teapot1"] = new Node;
     node["teapot2"] = new Node;
     node["bunny"] = new Node;
+    node["triangle"] = new Node;
 
     std::cout << "3" << endl;
 
@@ -171,26 +183,30 @@ void Scene::init(void)
 
     std::cout << node["world"] << endl;
 
-    node["world"]->childnodes.push_back(node["table"]);
-    node["world"]->childtransforms.push_back(mat4(1.0f));
+    // node["world"]->childnodes.push_back(node["table"]);
+    // node["world"]->childtransforms.push_back(mat4(1.0f));
 
-    std::cout << "8" << endl;
-    /*
-    node["world"] -> childnodes.push_back( node["bunny"] );
-    node["world"] -> childtransforms.push_back( translate(vec3(-1.8f,0.0f,0.0f)) * rotate( 90.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f) ));
-    */
-    node["world"]->childnodes.push_back(node["bunny1"]);
-    node["world"]->childtransforms.push_back(translate(vec3(0.3f, 0.0f, 0.0f)) * rotate(40.0f * float(M_PI) / 180.0f, vec3(0.0f, 1.0f, 0.0f)));
-    
-    std::cout << "9" << endl;
-    
-    node["world"]->childnodes.push_back(node["bunny2"]);
-    node["world"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)) * rotate(70.0f * float(M_PI) / 180.0f, vec3(0.0f, 1.0f, 0.0f)));
+    // std::cout << "8" << endl;
+    // /*
+    // node["world"] -> childnodes.push_back( node["bunny"] );
+    // node["world"] -> childtransforms.push_back( translate(vec3(-1.8f,0.0f,0.0f)) * rotate( 90.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f) ));
+    // */
+    // node["world"]->childnodes.push_back(node["bunny1"]);
+    // node["world"]->childtransforms.push_back(translate(vec3(0.3f, 0.0f, 0.0f)) * rotate(40.0f * float(M_PI) / 180.0f, vec3(0.0f, 1.0f, 0.0f)));
+
+    // std::cout << "9" << endl;
+
+    // node["world"]->childnodes.push_back(node["bunny2"]);
+    // node["world"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)) * rotate(70.0f * float(M_PI) / 180.0f, vec3(0.0f, 1.0f, 0.0f)));
     /*
     node["world"] -> models.push_back( model["bulb"] );
     node["world"] -> modeltransforms.push_back( translate(vec3(0.0f,2.0f,0.0f))*scale(vec3(0.1f)) );
     */
 
+    node["triangle"]->models.push_back(model["triangle"]);
+    node["triangle"]->modeltransforms.push_back(translate(vec3(0.0f, 1.0f, 5.0f)));
+    node["world"]->childnodes.push_back(node["triangle"]);
+    node["world"]->childtransforms.push_back(mat4(1.0f));
     std::cout << "10" << endl;
     // Put a camera
     camera = new Camera;

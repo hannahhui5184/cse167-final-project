@@ -8,7 +8,7 @@
 
 #ifndef __SCREENSHOT_H__
 #define __SCREENSHOT_H__
-#include "FreeImage.h"
+// #include "FreeImage.h"
 #include <vector>
 #include <iostream>
 #include "Image.h"
@@ -21,31 +21,32 @@ public:
     // {
     //     pixels_.resize(width_ * height_ * 3);
     // }
-    void save(const char *filename, Image *img)
-    {
-        // glReadBuffer(GL_FRONT);
-        // glReadPixels(0,0,width_,height_,GL_BGR,GL_UNSIGNED_BYTE,pixels_.data() );
-        int width_ = img->width;
-        int height_ = img->height;
 
-        BYTE data[3 * width_ * height_];
-        for (int i = 0; i < height_; i++)
-        {
-            for (int j = 0; j < width_; j++)
-            {
-                data[3 * (i * (width_) + j)] = img->pixelArr[i][j].x;     // R
-                data[3 * (i * (width_) + j) + 1] = img->pixelArr[i][j].y; // G
-                data[3 * (i * (width_) + j) + 2] = img->pixelArr[i][j].z; // B
-            }
-        }
+    // void save(const char *filename, Image *img)
+    // {
+    //     // glReadBuffer(GL_FRONT);
+    //     // glReadPixels(0,0,width_,height_,GL_BGR,GL_UNSIGNED_BYTE,pixels_.data() );
+    //     int width_ = img->width;
+    //     int height_ = img->height;
 
-        // http://graphics.stanford.edu/courses/cs148-10-summer/docs/FreeImage3131.pdf
-        FIBITMAP *bitmap = FreeImage_ConvertFromRawBits(data, width_, height_, width_ * 3, 24, 0xFF0000, 0x00FF00, 0x0000FF, true);
+    //     BYTE data[3 * width_ * height_];
+    //     for (int i = 0; i < height_; i++)
+    //     {
+    //         for (int j = 0; j < width_; j++)
+    //         {
+    //             data[3 * (i * (width_) + j)] = img->pixelArr[i][j].x;     // R
+    //             data[3 * (i * (width_) + j) + 1] = img->pixelArr[i][j].y; // G
+    //             data[3 * (i * (width_) + j) + 2] = img->pixelArr[i][j].z; // B
+    //         }
+    //     }
 
-        std::cout << "Saving screenshot: " << filename << std::endl;
+    //     // http://graphics.stanford.edu/courses/cs148-10-summer/docs/FreeImage3131.pdf
+    //     FIBITMAP *bitmap = FreeImage_ConvertFromRawBits(data, width_, height_, width_ * 3, 24, 0xFF0000, 0x00FF00, 0x0000FF, true);
 
-        FreeImage_Save(FIF_PNG, bitmap, filename, 0);
-    }
+    //     std::cout << "Saving screenshot: " << filename << std::endl;
+
+    //     FreeImage_Save(FIF_PNG, bitmap, filename, 0);
+    // }
 
     // private:
     //     int width_;                // Window width

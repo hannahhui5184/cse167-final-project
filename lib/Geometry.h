@@ -50,6 +50,7 @@ public:
   void init(){};
   // Init used by .obj files
   void init(const char *s);
+  void init(glm::mat3 points, glm::mat3 norm);
 
   // // Init used by Triangle
   // virtual void init(glm::mat3x3 tri, glm::mat3x3 norm){};

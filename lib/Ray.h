@@ -14,11 +14,11 @@ public:
     glm::vec3 pos; // position of ray
     glm::vec3 dir; // direction of ray (unit vector)
 
-    Ray(glm::vec3 position, glm::vec3 direction) {
+    Ray(glm::vec3 position, glm::vec3 direction)
+    {
         pos = position;
         dir = direction;
     }
 };
 
 #endif
-
