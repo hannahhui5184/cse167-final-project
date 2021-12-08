@@ -11,20 +11,25 @@ using namespace glm;
 void Scene::init(void)
 {
     // Create a geometry palette
-    geometry["cube"] = new Geometry;
+    // geometry["cube"] = new Geometry;
     geometry["teapot"] = new Geometry;
     geometry["bunny"] = new Geometry;
     geometry["triangle"] = new Geometry;
-    geometry["cube"]->init("models/teapot.obj");
+    // geometry["cube"]->init("models/teapot.obj");
     geometry["teapot"]->init("models/teapot.obj");
     geometry["bunny"]->init("models/bunny.obj");
-    mat3 points = mat3x3(vec3(0.0f, 0.0f, 0.0f),
-                         vec3(1.0f, 0.0f, 0.0f),
-                         vec3(0.0f, 2.0f, 0.0f));
 
-    mat3 norms = mat3x3(vec3(0.0f, 0.0f, 1.0f),
-                        vec3(0.0f, 0.0f, 1.0f),
-                        vec3(0.0f, 0.0f, 1.0f));
+    vec3 p1(0.0f, 0.0f, 1.0f);
+    vec3 p2(1.0f, 0.0f, 0.0f);
+    vec3 p3(0.0f, 2.0f, 0.0f);
+
+    vec3 norm = normalize(cross(p3 - p1, p3 - p2));
+    // mat3 points = mat3x3(vec3(0.0f, 0.0f, 0.0f),
+    //                      vec3(1.0f, 0.0f, 0.0f),
+    //                      vec3(0.0f, 2.0f, 0.0f));
+    std::cout << to_string(norm) << endl;
+    mat3 points = mat3x3(p1, p2, p3);
+    mat3 norms = mat3x3(norm, norm, norm);
     geometry["triangle"]->init(points, norms);
 
     // Create a material palette
@@ -80,15 +85,15 @@ void Scene::init(void)
     model["teapot2"] = new Model;
     model["teapot2"]->geometry = geometry["teapot"];
     model["teapot2"]->material = material["ceramic"];
-    model["table piece"] = new Model;
-    model["table piece"]->geometry = geometry["cube"];
-    model["table piece"]->material = material["turquoise"];
+    // model["table piece"] = new Model;
+    // model["table piece"]->geometry = geometry["cube"];
+    // model["table piece"]->material = material["turquoise"];
     model["bunny"] = new Model;
     model["bunny"]->geometry = geometry["bunny"];
     model["bunny"]->material = material["turquoise"];
-    model["bulb"] = new Model;
-    model["bulb"]->geometry = geometry["cube"];
-    model["bulb"]->material = material["bulb"];
+    // model["bulb"] = new Model;
+    // model["bulb"]->geometry = geometry["cube"];
+    // model["bulb"]->material = material["bulb"];
     model["bunny1"] = new Model;
     model["bunny1"]->geometry = geometry["bunny"];
     model["bunny1"]->material = material["brass"];
@@ -113,11 +118,11 @@ void Scene::init(void)
     node["world"] = new Node;
     node["bunny1"] = new Node;
     node["bunny2"] = new Node;
-    node["table"] = new Node;
-    node["table top"] = new Node;
-    node["table leg"] = new Node;
-    node["table side"] = new Node;
-    node["table back"] = new Node;
+    // node["table"] = new Node;
+    // node["table top"] = new Node;
+    // node["table leg"] = new Node;
+    // node["table side"] = new Node;
+    // node["table back"] = new Node;
     node["teapot1"] = new Node;
     node["teapot2"] = new Node;
     node["bunny"] = new Node;
@@ -125,38 +130,38 @@ void Scene::init(void)
 
     std::cout << "3" << endl;
 
-    node["table"]->childnodes.push_back(node["table top"]);
-    node["table"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)));
-    node["table"]->childnodes.push_back(node["table leg"]);
-    node["table"]->childtransforms.push_back(translate(vec3(-0.9f, -0.7f, -0.4f)));
-    node["table"]->childnodes.push_back(node["table leg"]);
-    node["table"]->childtransforms.push_back(translate(vec3(-0.9f, -0.7f, 0.4f)));
-    node["table"]->childnodes.push_back(node["table leg"]);
-    node["table"]->childtransforms.push_back(translate(vec3(0.9f, -0.7f, 0.4f)));
-    node["table"]->childnodes.push_back(node["table leg"]);
-    node["table"]->childtransforms.push_back(translate(vec3(0.9f, -0.7f, -0.4f)));
-    node["table"]->childnodes.push_back(node["table side"]);
-    node["table"]->childtransforms.push_back(translate(vec3(0.95f, 0.0f, 0.0f)));
-    node["table"]->childnodes.push_back(node["table side"]);
-    node["table"]->childtransforms.push_back(translate(vec3(-0.95f, 0.0f, 0.0f)));
-    node["table"]->childnodes.push_back(node["table back"]);
-    node["table"]->childtransforms.push_back(translate(vec3(0.0f, 0.3f, -0.45f)));
+    // node["table"]->childnodes.push_back(node["table top"]);
+    // node["table"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)));
+    // node["table"]->childnodes.push_back(node["table leg"]);
+    // node["table"]->childtransforms.push_back(translate(vec3(-0.9f, -0.7f, -0.4f)));
+    // node["table"]->childnodes.push_back(node["table leg"]);
+    // node["table"]->childtransforms.push_back(translate(vec3(-0.9f, -0.7f, 0.4f)));
+    // node["table"]->childnodes.push_back(node["table leg"]);
+    // node["table"]->childtransforms.push_back(translate(vec3(0.9f, -0.7f, 0.4f)));
+    // node["table"]->childnodes.push_back(node["table leg"]);
+    // node["table"]->childtransforms.push_back(translate(vec3(0.9f, -0.7f, -0.4f)));
+    // node["table"]->childnodes.push_back(node["table side"]);
+    // node["table"]->childtransforms.push_back(translate(vec3(0.95f, 0.0f, 0.0f)));
+    // node["table"]->childnodes.push_back(node["table side"]);
+    // node["table"]->childtransforms.push_back(translate(vec3(-0.95f, 0.0f, 0.0f)));
+    // node["table"]->childnodes.push_back(node["table back"]);
+    // node["table"]->childtransforms.push_back(translate(vec3(0.0f, 0.3f, -0.45f)));
 
-    node["table leg"]->models.push_back(model["table piece"]);
-    node["table leg"]->modeltransforms.push_back(translate(vec3(0.0f, 0.5f, 0.0f)) * scale(vec3(0.1f, 0.2f, 0.2f)));
+    // node["table leg"]->models.push_back(model["table piece"]);
+    // node["table leg"]->modeltransforms.push_back(translate(vec3(0.0f, 0.5f, 0.0f)) * scale(vec3(0.1f, 0.2f, 0.2f)));
 
-    node["table side"]->models.push_back(model["table piece"]);
-    node["table side"]->modeltransforms.push_back(translate(vec3(0.0f, 0.3f, 0.0f)) * scale(vec3(0.1f, 0.8f, 1.0f)));
+    // node["table side"]->models.push_back(model["table piece"]);
+    // node["table side"]->modeltransforms.push_back(translate(vec3(0.0f, 0.3f, 0.0f)) * scale(vec3(0.1f, 0.8f, 1.0f)));
 
-    node["table back"]->models.push_back(model["table piece"]);
-    node["table back"]->modeltransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)) * scale(vec3(2.0f, 0.8f, 0.1f)));
+    // node["table back"]->models.push_back(model["table piece"]);
+    // node["table back"]->modeltransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)) * scale(vec3(2.0f, 0.8f, 0.1f)));
 
-    node["table top"]->models.push_back(model["table piece"]);
-    node["table top"]->modeltransforms.push_back(translate(vec3(0.0f, -0.1f, 0.0f)) * scale(vec3(2.0f, 0.1f, 1.0f)));
-    node["table top"]->childnodes.push_back(node["teapot1"]);
-    node["table top"]->childtransforms.push_back(translate(vec3(-0.5f, 0.0f, 0.0f)));
-    node["table top"]->childnodes.push_back(node["teapot2"]);
-    node["table top"]->childtransforms.push_back(translate(vec3(0.5f, 0.0f, 0.0f)) * rotate(-120.0f * float(M_PI) / 180.0f, vec3(0.0f, 1.0f, 0.0f)));
+    // node["table top"]->models.push_back(model["table piece"]);
+    // node["table top"]->modeltransforms.push_back(translate(vec3(0.0f, -0.1f, 0.0f)) * scale(vec3(2.0f, 0.1f, 1.0f)));
+    // node["table top"]->childnodes.push_back(node["teapot1"]);
+    // node["table top"]->childtransforms.push_back(translate(vec3(-0.5f, 0.0f, 0.0f)));
+    // node["table top"]->childnodes.push_back(node["teapot2"]);
+    // node["table top"]->childtransforms.push_back(translate(vec3(0.5f, 0.0f, 0.0f)) * rotate(-120.0f * float(M_PI) / 180.0f, vec3(0.0f, 1.0f, 0.0f)));
 
     std::cout << "4" << endl;
     /*
@@ -166,18 +171,19 @@ void Scene::init(void)
     node["teapot2"] -> modeltransforms.push_back( scale(vec3(1.0f,1.5f,1.0f)) * scale(vec3(0.5f)) );
     */
 
-    node["bunny"]->models.push_back(model["bunny"]);
-    node["bunny"]->modeltransforms.push_back(scale(vec3(0.8f)) * translate(vec3(0.0f, 1.0f, 0.0f)));
+    // node["bunny"]->models.push_back(model["bunny"]);
+    // node["bunny"]->modeltransforms.push_back(scale(vec3(0.8f)) * translate(vec3(0.0f, 1.0f, 0.0f)));
 
-    std::cout << "5" << endl;
+    // std::cout << "5" << endl;
 
-    node["bunny1"]->models.push_back(model["bunny1"]);
-    node["bunny1"]->modeltransforms.push_back(scale(vec3(0.2f)) * translate(vec3(0.0f, 0.7f, 0.0f)));
+    // BUNNIES HERE TODO:
+    // node["bunny1"]->models.push_back(model["bunny1"]);
+    // node["bunny1"]->modeltransforms.push_back(scale(vec3(0.2f)) * translate(vec3(0.0f, 0.7f, 0.0f)));
 
-    std::cout << "6" << endl;
+    // std::cout << "6" << endl;
 
-    node["bunny2"]->models.push_back(model["bunny2"]);
-    node["bunny2"]->modeltransforms.push_back(scale(vec3(0.3f)) * translate(vec3(0.0f, 0.7f, 0.0f)));
+    // node["bunny2"]->models.push_back(model["bunny2"]);
+    // node["bunny2"]->modeltransforms.push_back(scale(vec3(0.3f)) * translate(vec3(0.0f, 0.7f, 0.0f)));
 
     std::cout << "7" << endl;
 
@@ -186,23 +192,24 @@ void Scene::init(void)
     // node["world"]->childnodes.push_back(node["table"]);
     // node["world"]->childtransforms.push_back(mat4(1.0f));
 
-    // std::cout << "8" << endl;
-    // /*
-    // node["world"] -> childnodes.push_back( node["bunny"] );
-    // node["world"] -> childtransforms.push_back( translate(vec3(-1.8f,0.0f,0.0f)) * rotate( 90.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f) ));
-    // */
-    // node["world"]->childnodes.push_back(node["bunny1"]);
-    // node["world"]->childtransforms.push_back(translate(vec3(0.3f, 0.0f, 0.0f)) * rotate(40.0f * float(M_PI) / 180.0f, vec3(0.0f, 1.0f, 0.0f)));
+    std::cout << "8" << endl;
+    /*
+    node["world"] -> childnodes.push_back( node["bunny"] );
+    node["world"] -> childtransforms.push_back( translate(vec3(-1.8f,0.0f,0.0f)) * rotate( 90.0f*float(M_PI)/180.0f, vec3(0.0f, 1.0f, 0.0f) ));
+    */
+    node["world"]->childnodes.push_back(node["bunny1"]);
+    node["world"]->childtransforms.push_back(translate(vec3(0.3f, 0.0f, 0.0f)) * rotate(40.0f * float(M_PI) / 180.0f, vec3(0.0f, 1.0f, 0.0f)));
 
-    // std::cout << "9" << endl;
+    std::cout << "9" << endl;
 
-    // node["world"]->childnodes.push_back(node["bunny2"]);
-    // node["world"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)) * rotate(70.0f * float(M_PI) / 180.0f, vec3(0.0f, 1.0f, 0.0f)));
+    node["world"]->childnodes.push_back(node["bunny2"]);
+    node["world"]->childtransforms.push_back(translate(vec3(0.0f, 0.0f, 0.0f)) * rotate(70.0f * float(M_PI) / 180.0f, vec3(0.0f, 1.0f, 0.0f)));
     /*
     node["world"] -> models.push_back( model["bulb"] );
     node["world"] -> modeltransforms.push_back( translate(vec3(0.0f,2.0f,0.0f))*scale(vec3(0.1f)) );
     */
 
+    // TRIANGLE HERE TODO:
     node["triangle"]->models.push_back(model["triangle"]);
     node["triangle"]->modeltransforms.push_back(translate(vec3(0.0f, 1.0f, 5.0f)));
     node["world"]->childnodes.push_back(node["triangle"]);
@@ -214,11 +221,4 @@ void Scene::init(void)
     camera->eye_default = vec3(0.0f, 1.0f, 5.0f);
     camera->up_default = vec3(0.0f, 1.0f, 0.0f);
     camera->reset();
-
-    // Initialize shader TODO:
-    // shader = new SurfaceShader;
-    // shader -> read_source( "shaders/projective.vert", "shaders/lighting.frag" );
-    // shader -> compile();
-    // glUseProgram(shader -> program);
-    // shader -> initUniforms();
 }

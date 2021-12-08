@@ -6,10 +6,10 @@ using namespace std;
  */
 Image::Image(int width, int height)
 {
-    for (int col = 0; col < width; col++)
+    for (int row = 0; row < height; row++)
     {
         vector<glm::vec3> row_vec;
-        for (int row = 0; row < height; row++)
+        for (int col = 0; col < width; col++)
         {
             row_vec.push_back(glm::vec3(0.0f, 0.0f, 0.0f));
         }

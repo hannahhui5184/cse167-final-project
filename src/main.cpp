@@ -8,8 +8,8 @@
 #include <glm/gtx/string_cast.hpp>
 
 using namespace std;
-int width = 100;
-int height = 100;
+int width = 400;
+int height = 300;
 
 int REC_DEPTH = 1;
 /**
@@ -124,7 +124,7 @@ glm::vec3 FindColor(Intersection hit, Scene *scene, int depth)
             Light *light = light_pair.second;
             glm::vec3 lightDir = glm::vec3(light->position) - hit.position;
 
-            Ray lightRay(hit.position, lightDir);
+            Ray lightRay(hit.position + 0.01f * lightDir, lightDir);
 
             // If there is an intersection between the light and the intersect point,
             // do not add this color component
@@ -135,6 +135,7 @@ glm::vec3 FindColor(Intersection hit, Scene *scene, int depth)
                 // ambient and Lambert diffuse components (4-3 Lighting slide 25)
                 glm::vec4 light4 = (hit.material->ambient + hit.material->diffuse * std::max(glm::dot(hit.n, lightDir), 0.0f)) * light->color;
 
+                cout << "Dot Prod: " << glm::dot(hit.n, lightDir) << endl;
                 color += glm::vec3(light4);
             }
         }
@@ -167,7 +168,7 @@ Image *Raytrace(Camera *cam, Scene *scene, int width, int height)
         {
             Ray ray = RayThruPixel(cam, i, j);
             // Ray ray(glm::vec3(0.0f, 1.0f, 5.0f), glm::vec3(0.0f, 0.0f, -1.0f));
-            std::cout << "(i,j): " << i << " " << j << endl;
+            // std::cout << "(i,j): " << i << " " << j << endl;
             // std::cout << "position: " << ray.pos.x << "," << ray.pos.y << "," << ray.pos.z << endl;
             // std::cout << "direction: " << ray.dir.x << "," << ray.dir.y << "," << ray.dir.z << endl;
             Intersection hit = Intersect(ray, scene);
@@ -175,7 +176,7 @@ Image *Raytrace(Camera *cam, Scene *scene, int width, int height)
             // std::cout << "distance: " << hit.distance << endl;
             // std::cout << "normal: " << glm::to_string(hit.n) << endl
             //           << endl;
-            image->pixelArr[i][j] = FindColor(hit, scene, REC_DEPTH);
+            image->pixelArr[j][i] = FindColor(hit, scene, REC_DEPTH);
             // if (hit.distance < 0)
             // {
             //     image->pixelArr[i][j] = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -186,7 +187,7 @@ Image *Raytrace(Camera *cam, Scene *scene, int width, int height)
             // }
             // std::cout << image->pixelArr[i][j].x << "," << image->pixelArr[i][j].y << "," << image->pixelArr[i][j].z << endl;
         }
-        std::cout << endl;
+        // std::cout << endl;
     }
     return image;
 }
@@ -208,12 +209,14 @@ int main(int argc, char *argv[])
     // Scene scene = ?
 
     // Set width and height of image (currently arbitrary num)
-    int width = 100;
-    int height = 100;
 
+    cout << "Begin raytracing..." << endl;
     // Perform ray tracing
+    // Image img(width, height);
     Image *img = Raytrace(scene.camera, &scene, width, height);
+    cout << "Finished raytracing." << endl;
 
+    cout << "Begin converting to image..." << endl;
     // Save screenshot of image
     std::cerr << "P3\n"
               << width << ' ' << height << "\n255\n";
@@ -222,9 +225,9 @@ int main(int argc, char *argv[])
     {
         for (int i = 0; i < width; ++i)
         {
-            auto r = img->pixelArr[i][j].x;
-            auto g = img->pixelArr[i][j].y;
-            auto b = img->pixelArr[i][j].z;
+            auto r = img->pixelArr[j][i].x;
+            auto g = img->pixelArr[j][i].y;
+            auto b = img->pixelArr[j][i].z;
 
             int ir = static_cast<int>(255.999 * r);
             int ig = static_cast<int>(255.999 * g);
@@ -233,4 +236,5 @@ int main(int argc, char *argv[])
             std::cerr << ir << ' ' << ig << ' ' << ib << '\n';
         }
     }
+    cout << "Finished converting to image" << endl;
 }

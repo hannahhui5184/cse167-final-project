@@ -80,7 +80,7 @@ void Scene::draw(void)
 
             for (Triangle *tri : triangles)
             {
-                std::cout << "Triangles: " << glm::to_string(tri->points) << endl;
+                // std::cout << "Triangles: " << glm::to_string(tri->points) << endl;
                 glm::mat3x3 points = tri->points;
                 glm::mat3x3 norms = tri->norms;
 
