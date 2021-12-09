@@ -17,19 +17,6 @@ void Scene::draw(void)
 {
     // Pre-draw sequence: assign uniforms that are the same for all Geometry::draw call.  These uniforms include the camera view, proj, and the lights.  These uniform do not include modelview and material parameters.
     camera->computeMatrices();
-    // shader->view = camera->view;
-    // shader->projection = camera->proj;
-    // shader->nlights = light.size();
-    // shader->lightpositions.resize(shader->nlights);
-    // shader->lightcolors.resize(shader->nlights);
-    // int count = 0;
-    // for (std::pair<std::string, Light *> entry : light)
-    // {
-    //     shader->lightpositions[count] = (entry.second)->position;
-    //     shader->lightcolors[count] = (entry.second)->color;
-    //     count++;
-    // }
-
     // Define stacks for depth-first search (DFS)
     std::stack<Node *> dfs_stack;
     std::stack<mat4> matrix_stack; // HW3: You will update this matrix_stack during the depth-first search while loop.
@@ -67,14 +54,6 @@ void Scene::draw(void)
         {
             // Prepare to draw the geometry. Assign the modelview and the material.
 
-            // (HW3 hint: you should do something here)
-            // shader->modelview = cur_VM * (cur->modeltransforms[i]); // HW3: Without updating cur_VM, modelview would just be camera's view matrix.
-            // shader->material = (cur->models[i])->material;
-
-            // // The draw command
-            // shader->setUniforms();
-            // (cur->models[i])->geometry->draw();
-
             vector<Triangle *> triangles = cur->models[i]->geometry->triangles;
             vector<Triangle *> transformed;
 
@@ -98,21 +77,6 @@ void Scene::draw(void)
 
                 this->worldTriangles.push_back(worldTri);
             }
-
-            //TODO: Minghui's implementation
-            // glm::mat3 transformed_view = inverse(transpose(mat3(camera->view)));
-            // for (auto it = triangles.begin(); it != triangles.end(); i++)
-            // {
-            //     Triangle tri;
-            //     tri.points[0] = glm::mat3(camera->view) * (triangles[i]->points)[0];
-            //     tri.points[1] = glm::mat3(camera->view) * (triangles[i]->points)[1];
-            //     tri.points[2] = glm::mat3(camera->view) * (triangles[i]->points)[2];
-            //     tri.norms[0] = transformed_view * (triangles[i]->norms)[0];
-            //     tri.norms[1] = transformed_view * (triangles[i]->norms)[1];
-            //     tri.norms[2] = transformed_view * (triangles[i]->norms)[2];
-            //     cur->models[i]->geometry->worldTriangles.push(tri);
-            // }
-            // glm::vec3 transformed_norm3 = transformed_view * (triangles[i]->norms)[2];
         }
 
         // Continue the DFS: put all the child nodes of the current node in the stack
@@ -124,5 +88,4 @@ void Scene::draw(void)
         }
 
     } // End of DFS while loop.
-    // HW3: Your code will only be above this line.
 }

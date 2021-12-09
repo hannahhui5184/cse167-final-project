@@ -4,14 +4,14 @@
 #include "../lib/Intersection.h"
 #include <../lib/Ray.h>
 #include <../lib/Scene.h>
-#include <../lib/Screenshot.h>
+#include <../lib/Image.h>
 #include <glm/gtx/string_cast.hpp>
 
 using namespace std;
 
-#define WIDTH 120
-#define HEIGHT 90
-#define REC_DEPTH 0
+#define WIDTH 300
+#define HEIGHT 300
+#define REC_DEPTH 2
 
 /**
  * RayThruPixel - creates the Ray object that passes from the
@@ -184,12 +184,8 @@ int main(int argc, char *argv[])
     Scene scene;
     scene.init();
     scene.camera->aspect = float(WIDTH) / HEIGHT;
+    scene.camera->fovy = 15.0;
     scene.draw();
-
-    // Create Scene
-    // Scene scene = ?
-
-    // Set width and height of image (currently arbitrary num)
 
     cout << "Begin raytracing..." << endl;
     // Perform ray tracing

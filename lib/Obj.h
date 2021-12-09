@@ -15,9 +15,7 @@ public:
     void init(const char *filename);
 
     Intersection Intersect(Ray ray, Material *material);
-    // Obj()
-    // {
-    // }
+
     ~Obj()
     {
     }

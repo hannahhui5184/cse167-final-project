@@ -50,26 +50,21 @@ public:
   void init(){};
   // Init used by .obj files
   void init(const char *s);
-  void init(glm::mat3 points, glm::mat3 norm);
 
-  // // Init used by Triangle
-  // virtual void init(glm::mat3x3 tri, glm::mat3x3 norm){};
-  // // Init used by Sphere
-  // virtual void init(glm::vec3 center, float radius){};
+  // Init used by triangle objects
+  void init(glm::mat3 points, glm::mat3 norm);
 
   // Intersect overwritten by Triangle and Sphere
   Intersection Intersect(Ray ray, Material *material);
 
-  // void draw(void)
-  // {
-  //   glBindVertexArray(vao);
-  //   glDrawElements(mode, count, type, 0);
-  // }
+  // constructor 
   Geometry()
   {
     triangles = {};
     worldTriangles = {};
   }
+
+  // destructor
   ~Geometry()
   {
   }

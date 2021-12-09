@@ -87,7 +87,7 @@ RM = /bin/rm -f
 all: SceneViewer
 SceneViewer: main.o Camera.o Geometry.o Image.o Scene.o Triangle.o
 	$(CC) -o SceneViewer main.o Camera.o Geometry.o Image.o Scene.o Triangle.o $(LDFLAGS)
-main.o: src/main.cpp lib/Screenshot.h
+main.o: src/main.cpp
 	$(CC) $(CFLAGS) $(INCFLAGS) -c src/main.cpp 
 Camera.o: src/Camera.cpp lib/Camera.h
 	$(CC) $(CFLAGS) $(INCFLAGS) -c src/Camera.cpp

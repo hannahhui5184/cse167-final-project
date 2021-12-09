@@ -42,11 +42,6 @@ Intersection Triangle::Intersect(Ray ray)
 
     glm::vec3 n = glm::normalize(bary.x * n1 + bary.y * n2 + bary.z * n3);
 
-    // TODO: Delete // Find normal to triangle using cross product
-    // glm::vec3 n = glm::normalize(glm::cross(p1 - p2, p1 - p3));
-    // // Choose normal vector that points towards the ray
-    // n = (sq_distance(ray.pos, q + n) < sq_distance(ray.pos, q - n)) ? n : -1.0f * n;
-
     intersect.position = q;                             // position of the intersection
     intersect.n = n;                                    // surface normal (unit vector)
     intersect.material = Triangle::material;            // pointer to material/object
