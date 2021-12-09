@@ -9,8 +9,8 @@
 
 using namespace std;
 
-#define WIDTH 300
-#define HEIGHT 300
+#define WIDTH 200
+#define HEIGHT 200
 #define REC_DEPTH 2
 
 /**
@@ -122,10 +122,10 @@ glm::vec3 FindColor(Intersection hit, Scene *scene, int depth)
     if (depth > 0)
     {
         // Generate the mirror reflected ray and recurse
-        glm::vec3 mirrorDir = 2 * (glm::dot(hit.n, hit.v)) * (hit.n - hit.v); // (7-1 RayTracing slide 55)
+        glm::vec3 mirrorDir = glm::normalize((2 * (glm::dot(hit.n, hit.v)) * hit.n) - hit.v); // (7-1 RayTracing slide 55)
         Ray mirrorRay(hit.position, mirrorDir);
         Intersection mirrorHit = Intersect(mirrorRay, scene);
-        color += FindColor(mirrorHit, scene, depth - 1);
+        color += glm::vec3(hit.material->specular) * FindColor(mirrorHit, scene, depth - 1);
     }
 
     return color;
@@ -148,25 +148,8 @@ Image *Raytrace(Camera *cam, Scene *scene, int width, int height)
         for (int i = 0; i < width; i++)
         {
             Ray ray = RayThruPixel(cam, i, j);
-            // Ray ray(glm::vec3(0.0f, 1.0f, 5.0f), glm::vec3(0.0f, 0.0f, -1.0f));
-            // std::cout << "(i,j): " << i << " " << j << endl;
-            // std::cout << "position: " << ray.pos.x << "," << ray.pos.y << "," << ray.pos.z << endl;
-            // std::cout << "direction: " << ray.dir.x << "," << ray.dir.y << "," << ray.dir.z << endl;
             Intersection hit = Intersect(ray, scene);
-            // std::cout << "position intersection: " << hit.position.x << "," << hit.position.y << "," << hit.position.z << endl;
-            // std::cout << "distance: " << hit.distance << endl;
-            // std::cout << "normal: " << glm::to_string(hit.n) << endl
-            //           << endl;
             image->pixelArr[j][i] = FindColor(hit, scene, REC_DEPTH);
-            // if (hit.distance < 0)
-            // {
-            //     image->pixelArr[j][i] = glm::vec3(0.0f, 0.0f, 0.0f);
-            // }
-            // else
-            // {
-            //     image->pixelArr[j][i] = normalize(hit.n) * 0.5f + 0.5f;
-            // }
-            // std::cout << image->pixelArr[j][i].x << "," << image->pixelArr[j][i].y << "," << image->pixelArr[j][i].z << endl;
         }
         std::cout << "Raytracing is " << round(j * 100.0 / height) << "% done." << endl;
     }
